@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:note_app/app_dependencies.dart';
+import 'package:note_app/data/service/firebase_database.dart';
 import 'package:note_app/modules/sign_up/bloc/sign_up_state.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
@@ -32,7 +34,6 @@ class SignUpBloc extends Cubit<SignUpState> {
 
   String get password => form.control('password').value;
 
-
   ///Create a new user with email and password
   ///Returns the result of the request
   ///$1: success/failure
@@ -44,7 +45,10 @@ class SignUpBloc extends Cubit<SignUpState> {
         email: email,
         password: password,
       );
-      if (credentials.user != null) {
+      final user = credentials.user;
+      if (user != null) {
+        final firebaseDBService = getIt.get<FirebaseDatabaseService>();
+        await firebaseDBService.createUserRef(user);
         return (true, 'User created successfully');
       }
     } on FirebaseAuthException catch (error) {

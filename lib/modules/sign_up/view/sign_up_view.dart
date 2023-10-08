@@ -1,4 +1,7 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:auto_route/annotations.dart';
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -118,7 +121,25 @@ class _SignUpButton extends StatelessWidget {
           final bloc = context.read<SignUpBloc>();
           final response = await bloc.onSignUp();
           if (response.$1) {
-
+            showCupertinoDialog(
+              context: context,
+              barrierDismissible: true,
+              builder: (context) {
+                return CupertinoAlertDialog(
+                  title: Text(
+                    response.$2,
+                  ),
+                  actions: [
+                    CupertinoDialogAction(
+                      onPressed: () {
+                        AutoRouter.of(context).pop();
+                      },
+                      child: const Text('OK'),
+                    ),
+                  ],
+                );
+              },
+            );
           } else {
             print('onSignUp ${response.$2}');
           }

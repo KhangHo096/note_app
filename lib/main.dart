@@ -1,24 +1,26 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:note_app/app_dependencies.dart';
+import 'package:note_app/data/service/firebase_database.dart';
 import 'package:note_app/routes/app_router.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  // FirebaseAuth.instance.authStateChanges().listen((User? user) {
-  //   if (user == null) {
-  //     print('User is currently signed out!');
-  //   } else {
-  //     print('User is signed in!');
-  //   }
-  // });
-
+  configureInjection();
+  FirebaseAuth.instance.authStateChanges().listen((User? user) {
+    if (user != null) {
+      final firebaseDBService = getIt.get<FirebaseDatabaseService>();
+      firebaseDBService.setCurrentUser(user);
+    }
+  });
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  final _appRouter = AppRouter();
+  final _appRouter = getIt<AppRouter>();
 
   MyApp({super.key});
 

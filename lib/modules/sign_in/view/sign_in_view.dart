@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
+import 'package:note_app/app_dependencies.dart';
 import 'package:note_app/modules/sign_in/bloc/sign_in_bloc.dart';
 import 'package:note_app/modules/sign_in/bloc/sign_in_state.dart';
 import 'package:note_app/routes/app_router.dart';
@@ -59,12 +60,12 @@ class _SignInPageState extends State<SignInPage> {
               child: Column(
                 children: [
                   SizedBox(height: _screenHeight * .1),
-                  EmailField(
+                  const EmailField(
                     title: 'Email',
                     formControlName: 'email',
                   ),
                   SizedBox(height: _screenHeight * .05),
-                  PasswordInputField(
+                  const PasswordInputField(
                     title: 'Password',
                     formControlName: 'password',
                   ),
@@ -115,7 +116,7 @@ class _SignInButton extends StatelessWidget {
           final bloc = context.read<SignInBloc>();
           final response = await bloc.onSignIn();
           if (response.$1) {
-
+            getIt<AppRouter>().push(const HomePageRoute());
           } else {
             print('onSignIn ${response.$2}');
           }
@@ -136,7 +137,7 @@ class _SignUpText extends StatelessWidget {
     return Center(
       child: TextButton(
         onPressed: () {
-          AutoRouter.of(context).push(const SignUpPageRoute());
+          getIt<AppRouter>().push(const SignUpPageRoute());
         },
         child: const Text(
           'Don\'t have an account?',

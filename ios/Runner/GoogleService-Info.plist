@@ -26,5 +26,7 @@
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
 	<string>1:546726156441:ios:1d9440634d9e87b5f6c008</string>
+	<key>DATABASE_URL</key>
+	<string>https://note-app-coderpush-default-rtdb.asia-southeast1.firebasedatabase.app</string>
 </dict>
 </plist>
