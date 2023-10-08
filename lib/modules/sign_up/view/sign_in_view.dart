@@ -1,4 +1,4 @@
-import 'package:auto_route/auto_route.dart';
+import 'package:auto_route/annotations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,14 +9,14 @@ import 'package:note_app/widgets/input_field.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
 @RoutePage()
-class SignInPage extends StatefulWidget {
-  const SignInPage({super.key});
+class SignUpPage extends StatefulWidget {
+  const SignUpPage({super.key});
 
   @override
-  State<SignInPage> createState() => _SignInPageState();
+  State<SignUpPage> createState() => _SignUpPageState();
 }
 
-class _SignInPageState extends State<SignInPage> {
+class _SignUpPageState extends State<SignUpPage> {
   double _screenHeight = 0;
   late final SignInBloc _bloc;
 
@@ -86,7 +86,7 @@ class _SignInPageState extends State<SignInPage> {
     return const Padding(
       padding: EdgeInsets.all(12.0),
       child: Text(
-        'Sign in',
+        'Sign up',
         style: TextStyle(
           fontSize: 28.0,
           fontWeight: FontWeight.bold,
@@ -110,7 +110,7 @@ class _SignInButton extends StatelessWidget {
             : CupertinoColors.inactiveGray,
         onPressed: () {},
         child: const Text(
-          'Sign in',
+          'Sign up',
         ),
       ),
     );

@@ -1,9 +1,22 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:note_app/modules/home/view/home_view.dart';
-import 'package:note_app/modules/sign_in/view/sign_in_view.dart';
+import 'package:note_app/routes/app_router.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  FirebaseAuth.instance
+      .authStateChanges()
+      .listen((User? user) {
+    if (user == null) {
+      print('User is currently signed out!');
+    } else {
+      print('User is signed in!');
+    }
+  });
+
   runApp(const MyApp());
 }
 
@@ -12,14 +25,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    final appRouter = AppRouter();
+    return MaterialApp.router(
+      routerConfig: appRouter.config(),
       theme: ThemeData(
         appBarTheme: const AppBarTheme(
           systemOverlayStyle: SystemUiOverlayStyle.dark,
         ),
       ),
       title: 'Note App',
-      home: const SignInView(),
       debugShowCheckedModeBanner: false,
     );
   }
