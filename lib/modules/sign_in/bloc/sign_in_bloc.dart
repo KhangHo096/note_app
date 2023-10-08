@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:note_app/modules/sign_in/bloc/sign_in_state.dart';
 import 'package:reactive_forms/reactive_forms.dart';
@@ -22,5 +23,23 @@ class SignInBloc extends Cubit<SignInState> {
     },
   );
 
-  onEmailChanged(String email) {}
+  String get email => form.control('email').value;
+
+  String get password => form.control('password').value;
+
+  Future<(bool, String)> onSignIn() async {
+    try {
+      final credentials =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      if (credentials.user != null) {
+        return (true, 'User created successfully');
+      }
+    } on FirebaseAuthException catch (_) {
+      return (false, 'Invalid login credentials');
+    }
+    return (false, 'Unknown error');
+  }
 }

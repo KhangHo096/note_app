@@ -96,11 +96,12 @@ class _PasswordInputFieldState extends State<PasswordInputField> {
             obscureText: _obscured,
             formControlName: widget.formControlName,
             validationMessages: {
-              'required': (error) => 'Password is required',
+              'mustMatch': (error) => '${widget.title} is not matched',
+              'required': (error) => '${widget.title} is required',
               'minLength': (error) =>
-                  'Password must have at least 8 characters',
+                  '${widget.title} must have at least 8 characters',
               'maxLength': (error) =>
-                  'Password cannot have more than 16 characters'
+                  '${widget.title} cannot have more than 16 characters'
             },
             decoration: InputDecoration(
               filled: true,

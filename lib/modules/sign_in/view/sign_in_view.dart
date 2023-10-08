@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'package:note_app/modules/sign_in/bloc/sign_in_bloc.dart';
 import 'package:note_app/modules/sign_in/bloc/sign_in_state.dart';
+import 'package:note_app/routes/app_router.dart';
 import 'package:note_app/widgets/input_field.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
@@ -38,42 +39,8 @@ class _SignInPageState extends State<SignInPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _title(),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: BlocBuilder<SignInBloc, SignInState>(
-                      builder: (context, state) {
-                        return ReactiveForm(
-                          formGroup: _bloc.form,
-                          child: Column(
-                            children: [
-                              SizedBox(height: _screenHeight * .1),
-                              EmailField(
-                                title: 'Email',
-                                formControlName: 'email',
-                              ),
-                              SizedBox(height: _screenHeight * .05),
-                              PasswordInputField(
-                                title: 'Password',
-                                formControlName: 'password',
-                              ),
-                              SizedBox(height: _screenHeight * .03),
-                              _SignInButton(),
-                              Center(
-                                child: TextButton(
-                                  onPressed: () {},
-                                  child: Text(
-                                    'Don\'t have an account?',
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                )
+                const _SignInTitle(),
+                _body(),
               ],
             ),
           ),
@@ -82,7 +49,43 @@ class _SignInPageState extends State<SignInPage> {
     );
   }
 
-  Widget _title() {
+  Expanded _body() {
+    return Expanded(
+      child: SingleChildScrollView(
+        child: BlocBuilder<SignInBloc, SignInState>(
+          builder: (context, state) {
+            return ReactiveForm(
+              formGroup: _bloc.form,
+              child: Column(
+                children: [
+                  SizedBox(height: _screenHeight * .1),
+                  EmailField(
+                    title: 'Email',
+                    formControlName: 'email',
+                  ),
+                  SizedBox(height: _screenHeight * .05),
+                  PasswordInputField(
+                    title: 'Password',
+                    formControlName: 'password',
+                  ),
+                  SizedBox(height: _screenHeight * .03),
+                  const _SignInButton(),
+                  const _SignUpText(),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _SignInTitle extends StatelessWidget {
+  const _SignInTitle();
+
+  @override
+  Widget build(BuildContext context) {
     return const Padding(
       padding: EdgeInsets.all(12.0),
       child: Text(
@@ -108,9 +111,35 @@ class _SignInButton extends StatelessWidget {
         color: (form?.valid ?? false)
             ? CupertinoColors.activeBlue
             : CupertinoColors.inactiveGray,
-        onPressed: () {},
+        onPressed: () async {
+          final bloc = context.read<SignInBloc>();
+          final response = await bloc.onSignIn();
+          if (response.$1) {
+
+          } else {
+            print('onSignIn ${response.$2}');
+          }
+        },
         child: const Text(
           'Sign in',
+        ),
+      ),
+    );
+  }
+}
+
+class _SignUpText extends StatelessWidget {
+  const _SignUpText();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: TextButton(
+        onPressed: () {
+          AutoRouter.of(context).push(const SignUpPageRoute());
+        },
+        child: const Text(
+          'Don\'t have an account?',
         ),
       ),
     );
