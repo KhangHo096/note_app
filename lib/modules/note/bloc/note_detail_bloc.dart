@@ -57,6 +57,7 @@ class NoteDetailBloc extends Cubit<NoteDetailState> {
   @override
   Future<void> close() {
     noteChangeStream.cancel();
+    controller.dispose();
     return super.close();
   }
 
@@ -64,6 +65,7 @@ class NoteDetailBloc extends Cubit<NoteDetailState> {
     if (note.content != null && note.content?.isNotEmpty == true) {
       final contentJson = jsonDecode(note.content ?? '');
       final document = Document.fromJson(contentJson);
+      controller.dispose();
       controller = QuillController(
         document: document,
         selection: TextSelection.collapsed(
@@ -74,20 +76,22 @@ class NoteDetailBloc extends Cubit<NoteDetailState> {
   }
 
   void _setOnNoteChange() {
-    noteChangeStream = controller.changes.listen((_) {
-      EasyDebounce.debounce(
-        'note-content',
-        const Duration(milliseconds: 500),
-        () {
-          final plainContent = controller.document.toPlainText();
-          final title = StringUtils.getNoteTitleFromContent(plainContent);
-          dbService.updateNote(
-            note: note,
-            content: _noteContent,
-            title: title,
-          );
-        },
-      );
-    });
+    noteChangeStream = controller.changes.listen(
+      (_) {
+        EasyDebounce.debounce(
+          'note-content',
+          const Duration(milliseconds: 500),
+          () {
+            final plainContent = controller.document.toPlainText();
+            final title = StringUtils.getNoteTitleFromContent(plainContent);
+            dbService.updateNote(
+              note: note,
+              content: _noteContent,
+              title: title,
+            );
+          },
+        );
+      },
+    );
   }
 }

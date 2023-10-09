@@ -38,7 +38,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               _homeTitle(),
               _notesList(),
-              _addButton(),
+              _bottomActions(),
             ],
           ),
         ),
@@ -46,35 +46,43 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Row _addButton() {
+  Row _bottomActions() {
     return Row(
       children: [
-        IconButton(
-          onPressed: () {
-            DialogUtils().showConfirmation(
-              context: context,
-              message: 'Do you want to log out?',
-              onConfirm: () {
-                _bloc.logOut();
-              },
-            );
-          },
-          icon: const Icon(
-            Icons.logout_outlined,
-            size: 28.0,
-          ),
-        ),
+        _logOutBtn(),
         const Spacer(),
-        IconButton(
-          onPressed: () {
-            _bloc.createNewNote();
-          },
-          icon: const Icon(
-            Icons.add_box_outlined,
-            size: 28.0,
-          ),
-        ),
+        _addNewNoteBtn(),
       ],
+    );
+  }
+
+  IconButton _addNewNoteBtn() {
+    return IconButton(
+      onPressed: () {
+        _bloc.createNewNote();
+      },
+      icon: const Icon(
+        Icons.add_box_outlined,
+        size: 28.0,
+      ),
+    );
+  }
+
+  IconButton _logOutBtn() {
+    return IconButton(
+      onPressed: () {
+        DialogUtils().showConfirmation(
+          context: context,
+          message: 'Do you want to log out?',
+          onConfirm: () {
+            _bloc.logOut();
+          },
+        );
+      },
+      icon: const Icon(
+        Icons.logout_outlined,
+        size: 28.0,
+      ),
     );
   }
 

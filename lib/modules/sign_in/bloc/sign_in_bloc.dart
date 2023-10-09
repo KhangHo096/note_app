@@ -30,6 +30,10 @@ class SignInBloc extends Cubit<SignInState> {
   String get password => form.control('password').value;
   final firebaseDBService = getIt.get<FirebaseDatabaseService>();
 
+  ///Log in with email and password
+  ///Returns the result of the request
+  ///$1: success/failure
+  ///$2: message/error message
   Future<(bool, String)> onSignIn() async {
     try {
       final credentials =
