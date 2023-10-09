@@ -25,6 +25,6 @@ Flutter version: `3.13.3`
 
 ## Screens
 
-![sign-in-screen|250x](https://github.com/KhangHo096/note_app/assets/69070874/4604d3d5-5ea2-4c99-b238-b94ae9ad91ea =250x)
+![sign-in-screen|250x](https://github.com/KhangHo096/note_app/assets/69070874/4604d3d5-5ea2-4c99-b238-b94ae9ad91ea)
 
 Sign-in screen
