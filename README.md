@@ -41,5 +41,5 @@ Flutter version: `3.13.3`
 
 | Editing/Add note screen                                                                                           |     |
 |-------------------------------------------------------------------------------------------------------------------|-----|
-| <img src="https://github.com/KhangHo096/note_app/assets/69070874/273c2de8-28c5-4e1a-afe4-fd85ca94576a" width=80%> |     |
+| <img src="https://github.com/KhangHo096/note_app/assets/69070874/273c2de8-28c5-4e1a-afe4-fd85ca94576a" width=40%> |     |
 
