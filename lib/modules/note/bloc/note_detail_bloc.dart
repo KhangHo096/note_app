@@ -9,12 +9,16 @@ import 'package:note_app/app_dependencies.dart';
 import 'package:note_app/data/models/note/note_model.dart';
 import 'package:note_app/data/service/firebase_database.dart';
 import 'package:note_app/modules/note/bloc/note_detail_state.dart';
+import 'package:note_app/utils/date_time_utils.dart';
 import 'package:note_app/utils/string_utils.dart';
 
 class NoteDetailBloc extends Cubit<NoteDetailState> {
-  NoteDetailBloc({
-    required this.note,
-  }) : super(NoteDetailState()) {
+  NoteDetailBloc({required this.note})
+      : super(NoteDetailState(
+          createdAt: note.createdAt,
+          updatedAt: note.updatedAt,
+          showingDateType: NoteDateType.createdAt,
+        )) {
     _initNoteContent();
     _setOnNoteChange();
   }
@@ -27,6 +31,28 @@ class NoteDetailBloc extends Cubit<NoteDetailState> {
   QuillController controller = QuillController.basic();
 
   String get _noteContent => jsonEncode(controller.document.toDelta().toJson());
+
+  String getDateText() {
+    if (state.showingDateType == NoteDateType.createdAt) {
+      final createDate = DateTime.tryParse(state.createdAt ?? '');
+      if (createDate != null) {
+        return 'Created at: ${DateTimeUtils().formatDate(createDate)}';
+      } else {
+        return '';
+      }
+    } else {
+      final updateDate = DateTime.tryParse(state.updatedAt ?? '');
+      if (updateDate != null) {
+        return 'Updated at: ${DateTimeUtils().formatDate(updateDate)}';
+      } else {
+        return '';
+      }
+    }
+  }
+
+  void updateNoteDateType() {
+    emit(state.updateDateType());
+  }
 
   @override
   Future<void> close() {

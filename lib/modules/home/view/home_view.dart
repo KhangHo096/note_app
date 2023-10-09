@@ -7,6 +7,7 @@ import 'package:note_app/modules/home/bloc/home_bloc.dart';
 import 'package:note_app/modules/home/bloc/home_state.dart';
 import 'package:note_app/modules/home/widgets/note_item.dart';
 import 'package:note_app/routes/app_router.dart';
+import 'package:note_app/utils/dialog_utils.dart';
 
 @RoutePage()
 class HomePage extends StatefulWidget {
@@ -48,6 +49,21 @@ class _HomePageState extends State<HomePage> {
   Row _addButton() {
     return Row(
       children: [
+        IconButton(
+          onPressed: () {
+            DialogUtils().showConfirmation(
+              context: context,
+              message: 'Do you want to log out?',
+              onConfirm: () {
+                _bloc.logOut();
+              },
+            );
+          },
+          icon: const Icon(
+            Icons.logout_outlined,
+            size: 28.0,
+          ),
+        ),
         const Spacer(),
         IconButton(
           onPressed: () {

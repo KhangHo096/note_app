@@ -32,4 +32,9 @@ class HomeBloc extends Cubit<HomeState> {
     final notes = await dbService.getNotes();
     emit(state.copyWith(notes: notes));
   }
+
+  void logOut() async {
+    await FirebaseAuth.instance.signOut();
+    getIt<AppRouter>().replace(const SignInPageRoute());
+  }
 }

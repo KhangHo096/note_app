@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:injectable/injectable.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutter_quill/flutter_quill.dart';
+import 'package:injectable/injectable.dart';
 import 'package:note_app/data/models/note/note_model.dart';
 
 @lazySingleton
@@ -73,22 +76,33 @@ class FirebaseDatabaseService {
       final data = note.value as Map?;
       final content = data?['content'] as String?;
 
-      ///Remove notes that have empty content
+      ///Remove notes that have empty content - this only works
+      ///when creating new note
       if (content == null || content.isEmpty == true) {
-        final currentRef = ref.child('notes/${_currentUser?.uid}/${note.key}');
-        await currentRef.remove();
+        await _removeNote(note.key ?? '');
       } else {
-        ///Create note model to add to list
-        final noteModel = NoteModel(
-          key: note.key,
-          content: data?['content'],
-          title: data?['title'],
-          createdAt: data?['createdAt'],
-          updatedAt: data?['updatedAt'],
-        );
-        results.add(noteModel);
+        ///Remove empty note - when editing
+        final doc = Document.fromJson(jsonDecode(content));
+        if (doc.toPlainText().trim().isEmpty) {
+          await _removeNote(note.key ?? '');
+        } else {
+          ///Create note model to add to list
+          final noteModel = NoteModel(
+            key: note.key,
+            content: data?['content'],
+            title: data?['title'],
+            createdAt: data?['createdAt'],
+            updatedAt: data?['updatedAt'],
+          );
+          results.add(noteModel);
+        }
       }
     }
     return results.reversed.toList();
+  }
+
+  Future<void> _removeNote(String key) async {
+    final currentRef = ref.child('notes/${_currentUser?.uid}/$key');
+    await currentRef.remove();
   }
 }

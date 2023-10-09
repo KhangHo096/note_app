@@ -27,4 +27,37 @@ class DialogUtils {
       },
     );
   }
+
+  Future<void> showConfirmation({
+    required BuildContext context,
+    required String message,
+    required VoidCallback onConfirm,
+  }) async {
+    await showCupertinoDialog(
+      context: context,
+      barrierDismissible: true,
+      builder: (context) {
+        return CupertinoAlertDialog(
+          title: Text(
+            message,
+          ),
+          actions: [
+            CupertinoDialogAction(
+              onPressed: () {
+                getIt<AppRouter>().pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            CupertinoDialogAction(
+              onPressed: () {
+                getIt<AppRouter>().pop();
+                onConfirm.call();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
 }
