@@ -1,26 +1,32 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:easy_debounce/easy_debounce.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_quill/flutter_quill.dart';
+import 'package:note_app/app_dependencies.dart';
+import 'package:note_app/data/models/note/note_model.dart';
+import 'package:note_app/data/service/firebase_database.dart';
 import 'package:note_app/modules/note/bloc/note_detail_state.dart';
+import 'package:note_app/utils/string_utils.dart';
 
 class NoteDetailBloc extends Cubit<NoteDetailState> {
-  NoteDetailBloc() : super(NoteDetailState()) {
+  NoteDetailBloc({
+    required this.note,
+  }) : super(NoteDetailState()) {
+    _initNoteContent();
     _setOnNoteChange();
   }
 
-  _setOnNoteChange() {
-    noteChangeStream = controller.changes.listen((_) {
-      EasyDebounce.debounce(
-        'note-content',
-        const Duration(milliseconds: 500),
-        () {
-          final noteContent = controller.document.toPlainText();
-        },
-      );
-    });
-  }
+  final NoteModel note;
+  FirebaseDatabaseService dbService = getIt<FirebaseDatabaseService>();
+
+  late StreamSubscription noteChangeStream;
+
+  QuillController controller = QuillController.basic();
+
+  String get _noteContent => jsonEncode(controller.document.toDelta().toJson());
 
   @override
   Future<void> close() {
@@ -28,7 +34,34 @@ class NoteDetailBloc extends Cubit<NoteDetailState> {
     return super.close();
   }
 
-  late StreamSubscription noteChangeStream;
+  void _initNoteContent() {
+    if (note.content != null && note.content?.isNotEmpty == true) {
+      final contentJson = jsonDecode(note.content ?? '');
+      final document = Document.fromJson(contentJson);
+      controller = QuillController(
+        document: document,
+        selection: TextSelection.collapsed(
+          offset: document.toPlainText().length - 1,
+        ),
+      );
+    }
+  }
 
-  QuillController controller = QuillController.basic();
+  void _setOnNoteChange() {
+    noteChangeStream = controller.changes.listen((_) {
+      EasyDebounce.debounce(
+        'note-content',
+        const Duration(milliseconds: 500),
+        () {
+          final plainContent = controller.document.toPlainText();
+          final title = StringUtils.getNoteTitleFromContent(plainContent);
+          dbService.updateNote(
+            note: note,
+            content: _noteContent,
+            title: title,
+          );
+        },
+      );
+    });
+  }
 }

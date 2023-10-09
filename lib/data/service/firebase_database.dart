@@ -7,7 +7,7 @@ import 'package:note_app/data/models/note/note_model.dart';
 class FirebaseDatabaseService {
   FirebaseDatabaseService() {
     database = FirebaseDatabase.instance;
-    ref = FirebaseDatabase.instance.ref();
+    ref = database.ref();
   }
 
   late FirebaseDatabase database;
@@ -17,6 +17,8 @@ class FirebaseDatabaseService {
   User? _currentUser;
 
   User? get currentUser => _currentUser;
+
+  DatabaseReference get noteRef => ref.child('notes/${_currentUser?.uid}');
 
   Future<void> createUserRef(User user) async {
     final data = {
@@ -44,14 +46,49 @@ class FirebaseDatabaseService {
     await newNoteRef.set(data);
     return NoteModel(
       key: newNoteRef.key,
+      createdAt: now.toIso8601String(),
+      updatedAt: now.toIso8601String(),
     );
+  }
 
+  Future<void> updateNote({
+    required NoteModel note,
+    required String content,
+    required String title,
+  }) async {
+    final noteRef = ref.child('notes/${_currentUser?.uid}/${note.key}');
+    final now = DateTime.now();
+    noteRef.update({
+      'title': title,
+      'content': content,
+      'updatedAt': now.toIso8601String(),
+    });
   }
 
   Future<List<NoteModel>> getNotes() async {
     final noteRef = ref.child('notes/${_currentUser?.uid}');
+    List<NoteModel> results = [];
+    final value = await noteRef.get();
+    for (var note in value.children) {
+      final data = note.value as Map?;
+      final content = data?['content'] as String?;
 
-
-    return [];
+      ///Remove notes that have empty content
+      if (content == null || content.isEmpty == true) {
+        final currentRef = ref.child('notes/${_currentUser?.uid}/${note.key}');
+        await currentRef.remove();
+      } else {
+        ///Create note model to add to list
+        final noteModel = NoteModel(
+          key: note.key,
+          content: data?['content'],
+          title: data?['title'],
+          createdAt: data?['createdAt'],
+          updatedAt: data?['updatedAt'],
+        );
+        results.add(noteModel);
+      }
+    }
+    return results.reversed.toList();
   }
 }

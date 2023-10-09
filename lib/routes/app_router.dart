@@ -1,5 +1,7 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:flutter/material.dart';
 import 'package:injectable/injectable.dart';
+import 'package:note_app/data/models/note/note_model.dart';
 import 'package:note_app/modules/home/view/home_view.dart';
 import 'package:note_app/modules/note/view/note_detail_view.dart';
 import 'package:note_app/modules/sign_in/view/sign_in_view.dart';

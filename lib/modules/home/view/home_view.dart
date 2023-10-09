@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:note_app/app_dependencies.dart';
 import 'package:note_app/modules/home/bloc/home_bloc.dart';
+import 'package:note_app/modules/home/bloc/home_state.dart';
 import 'package:note_app/modules/home/widgets/note_item.dart';
 import 'package:note_app/routes/app_router.dart';
 
@@ -36,7 +37,6 @@ class _HomePageState extends State<HomePage> {
             children: [
               _homeTitle(),
               _notesList(),
-              const Spacer(),
               _addButton(),
             ],
           ),
@@ -52,7 +52,6 @@ class _HomePageState extends State<HomePage> {
         IconButton(
           onPressed: () {
             _bloc.createNewNote();
-
           },
           icon: const Icon(
             Icons.add_box_outlined,
@@ -67,11 +66,34 @@ class _HomePageState extends State<HomePage> {
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
-        child: ListView.builder(
-          itemBuilder: (context, index) {
-            return NoteItem();
+        child: BlocBuilder<HomeBloc, HomeState>(
+          builder: (context, state) {
+            if (state.notes.isEmpty) {
+              return _EmptyListNote(
+                onRefresh: () => _bloc.getNotes(),
+              );
+            }
+
+            return RefreshIndicator(
+              onRefresh: () async {
+                _bloc.getNotes();
+              },
+              child: ListView.builder(
+                itemBuilder: (context, index) {
+                  final item = state.notes[index];
+                  return NoteItem(
+                    item: item,
+                    onTap: () async {
+                      await getIt<AppRouter>()
+                          .push(NoteDetailPageRoute(note: item));
+                      _bloc.getNotes();
+                    },
+                  );
+                },
+                itemCount: state.notes.length,
+              ),
+            );
           },
-          itemCount: 4,
         ),
       ),
     );
@@ -85,6 +107,41 @@ class _HomePageState extends State<HomePage> {
         style: TextStyle(
           fontSize: 28.0,
           fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+}
+
+class _EmptyListNote extends StatelessWidget {
+  final VoidCallback onRefresh;
+
+  const _EmptyListNote({
+    required this.onRefresh,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return RefreshIndicator(
+      onRefresh: () async {
+        onRefresh.call();
+      },
+      child: SizedBox(
+        height: double.infinity,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height * .8,
+            child: const Center(
+              child: Text(
+                'You have no notes!',
+                style: TextStyle(
+                  fontSize: 28.0,
+                  color: CupertinoColors.inactiveGray,
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );

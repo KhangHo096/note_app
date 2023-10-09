@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:note_app/app_dependencies.dart';
@@ -11,6 +13,7 @@ class HomeBloc extends Cubit<HomeState> {
     if (user != null) {
       currentUser = user;
     }
+    getNotes();
   }
 
   late User currentUser;
@@ -19,6 +22,14 @@ class HomeBloc extends Cubit<HomeState> {
 
   Future<void> createNewNote() async {
     final newNote = await dbService.createNewNote();
-    getIt<AppRouter>().push(const NoteDetailPageRoute());
+    await getIt<AppRouter>().push(NoteDetailPageRoute(
+      note: newNote,
+    ));
+    getNotes();
+  }
+
+  void getNotes() async {
+    final notes = await dbService.getNotes();
+    emit(state.copyWith(notes: notes));
   }
 }
