@@ -24,3 +24,7 @@ Flutter version: `3.13.3`
 ##### Important: run build_runner to generate codes before running
 
 ## Screens
+
+![simulator_screenshot_ADC96C51-C1A6-4A23-A1F8-3C17E7B53DF4](https://github.com/KhangHo096/note_app/assets/69070874/4604d3d5-5ea2-4c99-b238-b94ae9ad91ea =250x)
+
+Sign-in screen
