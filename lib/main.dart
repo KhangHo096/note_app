@@ -11,9 +11,11 @@ Future<void> main() async {
   await Firebase.initializeApp();
   configureInjection();
   FirebaseAuth.instance.authStateChanges().listen((User? user) {
+    final firebaseDBService = getIt.get<FirebaseDatabaseService>();
     if (user != null) {
-      final firebaseDBService = getIt.get<FirebaseDatabaseService>();
       firebaseDBService.setCurrentUser(user);
+    } else {
+      firebaseDBService.clearCurrentUser();
     }
   });
   runApp(MyApp());

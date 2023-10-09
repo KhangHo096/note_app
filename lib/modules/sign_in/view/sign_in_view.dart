@@ -1,12 +1,16 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
 import 'package:note_app/app_dependencies.dart';
+import 'package:note_app/data/service/firebase_database.dart';
 import 'package:note_app/modules/sign_in/bloc/sign_in_bloc.dart';
 import 'package:note_app/modules/sign_in/bloc/sign_in_state.dart';
 import 'package:note_app/routes/app_router.dart';
+import 'package:note_app/utils/dialog_utils.dart';
 import 'package:note_app/widgets/input_field.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
@@ -26,6 +30,10 @@ class _SignInPageState extends State<SignInPage> {
   void initState() {
     super.initState();
     _bloc = SignInBloc();
+    final currentUser = getIt<FirebaseDatabaseService>().currentUser;
+    if (currentUser != null) {
+      getIt<AppRouter>().replace(const HomePageRoute());
+    }
   }
 
   @override
@@ -116,9 +124,12 @@ class _SignInButton extends StatelessWidget {
           final bloc = context.read<SignInBloc>();
           final response = await bloc.onSignIn();
           if (response.$1) {
-            getIt<AppRouter>().push(const HomePageRoute());
+            getIt<AppRouter>().replace(const HomePageRoute());
           } else {
-            print('onSignIn ${response.$2}');
+            DialogUtils().showSimpleMessage(
+              context: context,
+              message: response.$2,
+            );
           }
         },
         child: const Text(
@@ -136,8 +147,13 @@ class _SignUpText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: TextButton(
-        onPressed: () {
-          getIt<AppRouter>().push(const SignUpPageRoute());
+        onPressed: () async {
+          final signUpEmail =
+              await getIt<AppRouter>().push<String>(const SignUpPageRoute());
+          if (signUpEmail != null) {
+            final bloc = context.read<SignInBloc>();
+            bloc.form.control('email').value = signUpEmail;
+          }
         },
         child: const Text(
           'Don\'t have an account?',

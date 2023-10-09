@@ -6,11 +6,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:keyboard_dismisser/keyboard_dismisser.dart';
+import 'package:note_app/app_dependencies.dart';
 import 'package:note_app/modules/sign_up/bloc/sign_up_bloc.dart';
+import 'package:note_app/routes/app_router.dart';
+import 'package:note_app/utils/dialog_utils.dart';
 import 'package:note_app/widgets/input_field.dart';
 import 'package:reactive_forms/reactive_forms.dart';
 
-@RoutePage()
+@RoutePage<String>()
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
 
@@ -120,28 +123,12 @@ class _SignUpButton extends StatelessWidget {
         onPressed: () async {
           final bloc = context.read<SignUpBloc>();
           final response = await bloc.onSignUp();
+          await DialogUtils().showSimpleMessage(
+            context: context,
+            message: response.$2,
+          );
           if (response.$1) {
-            showCupertinoDialog(
-              context: context,
-              barrierDismissible: true,
-              builder: (context) {
-                return CupertinoAlertDialog(
-                  title: Text(
-                    response.$2,
-                  ),
-                  actions: [
-                    CupertinoDialogAction(
-                      onPressed: () {
-                        AutoRouter.of(context).pop();
-                      },
-                      child: const Text('OK'),
-                    ),
-                  ],
-                );
-              },
-            );
-          } else {
-            print('onSignUp ${response.$2}');
+            getIt<AppRouter>().pop<String>(bloc.form.control('email').value);
           }
         },
         child: const Text(
