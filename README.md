@@ -18,13 +18,13 @@ Flutter version: `3.13.3`
 
 * Bloc - Cubit: `flutter_bloc: ^8.1.3`
 * Routing: `auto_route: ^7.8.4 - auto_route_generator: ^7.3.2`
-* Dependencies injection: `  injectable: ^2.3.1 - get_it: ^7.6.4`
+* Dependencies injection: `injectable: ^2.3.1 - get_it: ^7.6.4`
 * Quill editor: `flutter_quill: ^7.4.9`
 * Firebase: `firebase_auth: ^4.10.1 - firebase_core: ^2.17.0 - firebase_database: ^10.2.7`
 ##### Important: run build_runner to generate codes before running
 
 ## Screens
 
-![sign-in-screen|250](https://github.com/KhangHo096/note_app/assets/69070874/4604d3d5-5ea2-4c99-b238-b94ae9ad91ea)
+![sign-in-screen|250x1000](https://github.com/KhangHo096/note_app/assets/69070874/4604d3d5-5ea2-4c99-b238-b94ae9ad91ea)
 
 Sign-in screen
