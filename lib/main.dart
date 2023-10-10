@@ -12,9 +12,7 @@ Future<void> main() async {
   configureInjection();
   FirebaseAuth.instance.authStateChanges().listen((User? user) {
     final firebaseDBService = getIt.get<FirebaseDatabaseService>();
-    if (user != null) {
-      firebaseDBService.setCurrentUser(user);
-    } else {
+    if (user == null) {
       firebaseDBService.clearCurrentUser();
     }
   });
