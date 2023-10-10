@@ -21,6 +21,14 @@ class NoteDetailState extends Equatable {
     );
   }
 
+  NoteDetailState changeUpdatedAt() {
+    return NoteDetailState(
+      createdAt: createdAt,
+      updatedAt: DateTime.now().toIso8601String(),
+      showingDateType: showingDateType,
+    );
+  }
+
   @override
   List<Object?> get props => [
         createdAt,

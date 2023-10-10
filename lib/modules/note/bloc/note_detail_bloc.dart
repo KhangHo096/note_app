@@ -89,6 +89,7 @@ class NoteDetailBloc extends Cubit<NoteDetailState> {
               content: _noteContent,
               title: title,
             );
+            emit(state.changeUpdatedAt());
           },
         );
       },
